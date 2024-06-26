@@ -5,13 +5,17 @@ import { DistanceData } from "../interface";
 const Steps: React.FC = () => {
   const [distanceData, setDistanceData] = useState<DistanceData[]>([]);
   const [newDistanceDate, setNewDistanceDate] = useState<string>("");
-  const [newDistanceValue, setNewDistanceValue] = useState<number | "">("");
+  const [newDistanceValue, setNewDistanceValue] = useState<number | string>("");
 
-  const handleDistanceDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDistanceDateChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setNewDistanceDate(event.target.value);
   };
 
-  const handleDistanceValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDistanceValueChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setNewDistanceValue(Number(event.target.value));
   };
 
@@ -23,13 +27,19 @@ const Steps: React.FC = () => {
       const updatedDistanceData = existingDistance
         ? [...distanceData].map((distance) =>
             distance.date === newDistanceDate
-              ? { ...distance, distance: distance.distance + newDistanceValue }
+              ? {
+                  ...distance,
+                  distance: distance.distance + Number(newDistanceValue),
+                }
               : distance
           )
-        : [...distanceData, { date: newDistanceDate, distance: newDistanceValue }];
+        : [
+            ...distanceData,
+            { date: newDistanceDate, distance: Number(newDistanceValue) },
+          ];
       setDistanceData(updatedDistanceData);
       setNewDistanceDate("");
-      setNewDistanceValue("");
+      setNewDistanceValue(0);
     }
   };
 
@@ -48,6 +58,15 @@ const Steps: React.FC = () => {
     }
   };
 
+  const formatedDate = (dateFormat: string) => {
+    const date = new Date(dateFormat);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+    return formattedDate;
+  };
+
   return (
     <div>
       <div className="title">
@@ -57,7 +76,7 @@ const Steps: React.FC = () => {
       <form className="input">
         <input
           className="input-box"
-          type="text"
+          type="date"
           value={newDistanceDate}
           onChange={handleDistanceDateChange}
           onKeyDown={handleKeyDown}
@@ -82,7 +101,7 @@ const Steps: React.FC = () => {
       <div className="output">
         {sortedDistanceData.map((item, index) => (
           <div className="resultItem" key={index}>
-            <span>{item.date}</span>
+            <span>{formatedDate(item.date)}</span>
             <span>{item.distance}</span>
             <div>
               <span>✎</span>
